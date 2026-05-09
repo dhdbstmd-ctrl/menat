@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>메나트 — 복잡한 금융, 쉽고 똑똑하게</title>
+<title>메나트 — ISA·IRP·ETF 비교, 포트폴리오 점검 무료 금융 플랫폼</title>
+<meta name="description" content="ISA·IRP·연금저축·CMA 계좌 비교, ETF 수수료·수익률 비교, 포트폴리오 점검까지 — 복잡한 금융을 쉽고 똑똑하게. 20대부터 60대까지 무료로 이용하세요.">
+<meta name="keywords" content="ISA, IRP, 연금저축, ETF비교, 절세, 포트폴리오, 금융교육, 재테크, 주식, 투자, 절세계산기, ETF추천">
+<meta name="author" content="Menat">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://menat.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://menat.vercel.app/">
+<meta property="og:title" content="메나트 — ISA·IRP·ETF 비교, 포트폴리오 점검 무료">
+<meta property="og:description" content="나는 지금 얼마나 손해보고 있을까? ISA·IRP·ETF 비교부터 포트폴리오 점검까지 무료로 이용하세요.">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="메나트">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="메나트 — ISA·IRP·ETF 비교, 포트폴리오 점검 무료">
+<meta name="twitter:description" content="나는 지금 얼마나 손해보고 있을까? 무료로 절세 진단 받아보세요.">
+<meta name="naver-site-verification" content="acbf73e31d6a8438857a5a91497b1891">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-03R8W00WHZ"></script>
 <script>
@@ -243,6 +258,16 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
 .suggest-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
 .suggest-desc{font-size:11px;color:var(--text-muted);line-height:1.5}
 
+.step-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:52px}
+.step-circle{width:32px;height:32px;border-radius:50%;background:#E2E8F0;color:#94A3B8;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all 0.2s;border:2px solid #E2E8F0}
+.step-item.active .step-circle{background:var(--blue);color:white;border-color:var(--blue)}
+.step-item.done .step-circle{background:var(--green);color:white;border-color:var(--green)}
+.step-label{font-size:10px;color:#94A3B8;font-weight:500;white-space:nowrap}
+.step-item.active .step-label{color:var(--blue);font-weight:700}
+.step-item.done .step-label{color:var(--green)}
+.step-line{flex:1;height:2px;background:#E2E8F0;margin:0 4px;margin-bottom:14px;transition:background 0.3s;min-width:20px}
+.step-line.done{background:var(--green)}
+.step-panel{animation:fadeUp 0.3s ease}
 footer{text-align:center;padding:28px 24px;font-size:11px;color:var(--text-light);line-height:1.7;border-top:1px solid var(--border);background:white;margin-top:16px}
 </style>
 </head>
@@ -284,92 +309,200 @@ footer{text-align:center;padding:28px 24px;font-size:11px;color:var(--text-light
 
   <!-- 절세 진단 -->
   <div class="section active" id="sec-calc">
-    <div class="card">
-      <div class="card-head">
-        <div class="sec-tag">절세 진단</div>
-        <div class="sec-title">내 상황에 맞는 절세 전략 찾기</div>
-        <div class="sec-desc">나이·소득·금융소득을 입력하면 법적으로 절약 가능한 최적 전략을 알려드려요</div>
-      </div>
 
-      <div class="three-col">
-        <div class="field"><label>나이</label><div class="input-wrap"><input type="number" id="age" placeholder="예: 23" min="18" max="80" oninput="onAge(this.value)"><span class="input-unit">세</span></div></div>
-        <div class="field"><label>연봉 (없으면 0)</label><div class="input-wrap"><input type="number" id="salary" placeholder="예: 5000" min="0"><span class="input-unit">만원</span></div></div>
-        <div class="field"><label>금융소득 <span style="font-size:10px;color:var(--text-light);">(작년 기준 이자+배당)</span></label><div class="input-wrap"><input type="number" id="finance-income" placeholder="예: 500" min="0" oninput="onFinanceIncome(this.value)"><span class="input-unit">만원</span></div></div>
+    <!-- 스텝 인디케이터 -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px;">
+      <div class="step-item active" id="step-ind-1" onclick="goStep(1)">
+        <div class="step-circle">1</div>
+        <div class="step-label">내 정보</div>
       </div>
-
-      <div class="age-badge" id="age-badge"></div>
-      <div class="vip-warning" id="vip-warning"></div>
-      <div style="margin:0 20px 14px;padding:9px 13px;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--text-muted);line-height:1.6;">
-        💡 <strong>금융소득이란?</strong> 은행 이자 + 주식·ETF 배당금 합계예요. <strong>작년(전년도) 기준</strong>으로 입력해주세요. 2,000만원 초과 시 금융소득종합과세 대상이 돼요.
+      <div class="step-line" id="step-line-1"></div>
+      <div class="step-item" id="step-ind-2" onclick="goStep(2)">
+        <div class="step-circle">2</div>
+        <div class="step-label">목돈 계획</div>
       </div>
-
-      <div class="slider-field">
-        <div class="slider-top"><label>연간 저축·투자 가능 금액</label><span class="slider-val" id="invest-val">1,000만원</span></div>
-        <input type="range" id="invest" min="0" max="20000" step="100" value="1000" oninput="document.getElementById('invest-val').textContent=parseInt(this.value).toLocaleString()+'만원'">
-        <div class="slider-labels"><span>0원</span><span>2억원</span></div>
+      <div class="step-line" id="step-line-2"></div>
+      <div class="step-item" id="step-ind-3" onclick="goStep(3)">
+        <div class="step-circle">3</div>
+        <div class="step-label">현재 계좌</div>
       </div>
-
-      <div class="divider"></div>
-      <div class="card-head" style="padding-top:16px;"><div class="sec-tag">목돈 계획</div></div>
-      <div class="grid-2">
-        <div class="sel-btn selected" data-liq="1" onclick="selectLiq(this)"><div class="btn-title">🏠 1~3년 내</div><div class="btn-desc">전세·보증금·취업 준비</div></div>
-        <div class="sel-btn" data-liq="3" onclick="selectLiq(this)"><div class="btn-title">💍 3~5년 내</div><div class="btn-desc">결혼 준비·집 마련</div></div>
-        <div class="sel-btn" data-liq="5" onclick="selectLiq(this)"><div class="btn-title">📈 5~10년 내</div><div class="btn-desc">내 집 마련·사업 자금</div></div>
-        <div class="sel-btn" data-liq="10" onclick="selectLiq(this)"><div class="btn-title">🌅 10년 이후</div><div class="btn-desc">노후 준비·장기 자산</div></div>
+      <div class="step-line" id="step-line-3"></div>
+      <div class="step-item" id="step-ind-4">
+        <div class="step-circle">✓</div>
+        <div class="step-label">결과</div>
       </div>
-
-      <div class="divider"></div>
-      <div class="card-head" style="padding-top:16px;"><div class="sec-tag">투자 목적</div></div>
-      <div class="pur-grid">
-        <button class="pur-btn selected" data-pur="save" onclick="selectPur(this)">💰 목돈 모으기</button>
-        <button class="pur-btn" data-pur="tax" onclick="selectPur(this)">🧾 세금 아끼기</button>
-        <button class="pur-btn" data-pur="retire" onclick="selectPur(this)">🌅 노후 준비</button>
-        <button class="pur-btn" data-pur="invest" onclick="selectPur(this)">📈 자산 불리기</button>
-      </div>
-
-      <div class="divider"></div>
-      <div class="card-head" style="padding-top:16px;"><div class="sec-tag">현재 계좌</div><div class="sec-desc" style="margin-bottom:12px;">지금 사용 중인 계좌를 모두 선택해주세요</div></div>
-      <div class="grid-2">
-        <div class="sel-btn" data-acc="isa" id="acc-isa" onclick="toggleAcc(this)"><div class="btn-title">ISA</div><div class="btn-desc">비과세 + 언제든 인출 가능</div></div>
-        <div class="sel-btn" data-acc="irp" onclick="toggleAcc(this)"><div class="btn-title">IRP</div><div class="btn-desc">세액공제 최대 148만원</div><div class="btn-warn" id="warn-irp"></div></div>
-        <div class="sel-btn" data-acc="pension" onclick="toggleAcc(this)"><div class="btn-title">연금저축</div><div class="btn-desc">세액공제 + ETF 투자</div><div class="btn-warn" id="warn-pension"></div></div>
-        <div class="sel-btn" data-acc="cma" onclick="toggleAcc(this)"><div class="btn-title">CMA</div><div class="btn-desc">수시입출금 단기 자금</div></div>
-      </div>
-      <div class="acc-warning" id="acc-warning"></div>
-
-      <div class="cta-wrap"><button class="cta-btn" onclick="calculate()">📊 내 상황 맞춤 진단하기</button></div>
     </div>
 
-    <div class="result-wrap" id="result">
-      <div class="profile-chip" id="profile-chip"></div>
-      <div class="loss-box">
-        <div class="loss-label">⚠️ 현재 연간 절세 손실액</div>
-        <div class="loss-amount" id="loss-amt"><span>약 </span>0<span>만원</span></div>
-        <div class="loss-sub" id="loss-sub"></div>
+    <!-- STEP 1: 내 정보 -->
+    <div class="step-panel" id="step-1">
+      <div class="card">
+        <div class="card-head">
+          <div class="sec-tag">STEP 1 · 내 정보</div>
+          <div class="sec-title">기본 정보를 입력해주세요</div>
+          <div class="sec-desc">나이와 소득에 따라 완전히 다른 절세 전략이 나와요</div>
+        </div>
+        <div class="three-col">
+          <div class="field"><label>나이</label><div class="input-wrap"><input type="number" id="age" placeholder="예: 23" min="18" max="80" oninput="onAge(this.value)"><span class="input-unit">세</span></div></div>
+          <div class="field"><label>연봉 <span style="font-size:10px;color:var(--text-light);">(없으면 0)</span></label><div class="input-wrap"><input type="number" id="salary" placeholder="예: 5000" min="0"><span class="input-unit">만원</span></div></div>
+          <div class="field"><label>금융소득 <span style="font-size:10px;color:var(--text-light);">(작년 이자+배당)</span></label><div class="input-wrap"><input type="number" id="finance-income" placeholder="예: 500" min="0" oninput="onFinanceIncome(this.value)"><span class="input-unit">만원</span></div></div>
+        </div>
+        <div class="age-badge" id="age-badge"></div>
+        <div class="vip-warning" id="vip-warning"></div>
+        <div style="margin:0 20px 14px;padding:9px 13px;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--text-muted);line-height:1.6;">
+          💡 <strong>금융소득이란?</strong> 은행 이자 + 배당금 합계, <strong>작년 기준</strong>으로 입력. 2,000만원 초과 시 금융소득종합과세 대상이에요.
+        </div>
+
+        <div class="divider"></div>
+        <div class="card-head" style="padding-top:16px;">
+          <div class="sec-tag">현재 투자 자산</div>
+          <div class="sec-desc" style="margin-bottom:12px;">입력하면 계좌별 절세 효과를 비교해드려요 <span style="font-size:11px;">(없으면 비워두세요)</span></div>
+        </div>
+        <div style="padding:0 20px;margin-bottom:20px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="field">
+              <label>총 투자 자산 <span style="font-size:10px;color:var(--text-light);">(주식·ETF 등)</span></label>
+              <div class="input-wrap"><input type="number" id="invest-asset" placeholder="예: 3000" min="0" oninput="onInvestAsset()"><span class="input-unit">만원</span></div>
+            </div>
+            <div class="field">
+              <label>연간 기대 수익률</label>
+              <div class="input-wrap"><input type="number" id="expected-return" placeholder="예: 8" min="0" max="50" step="0.5" oninput="onInvestAsset()"><span class="input-unit">%</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+            <span style="font-size:10px;color:var(--text-muted);align-self:center;">빠른 선택:</span>
+            <button onclick="setReturn(3.5)" style="padding:3px 10px;border-radius:20px;font-size:10px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">예금형 3.5%</button>
+            <button onclick="setReturn(6)" style="padding:3px 10px;border-radius:20px;font-size:10px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">코스피 6%</button>
+            <button onclick="setReturn(8)" style="padding:3px 10px;border-radius:20px;font-size:10px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">S&P500 8%</button>
+            <button onclick="setReturn(12)" style="padding:3px 10px;border-radius:20px;font-size:10px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">나스닥 12%</button>
+          </div>
+          <div id="account-compare-preview" style="display:none;"></div>
+        </div>
+
+        <div class="divider"></div>
+        <div style="padding:0 20px;margin-bottom:16px;">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;">
+            <label style="font-size:11px;color:var(--text-muted);font-weight:500;">연간 저축·투자 가능 금액</label>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--text-muted);">슬라이더로 조절하세요</span>
+              <span class="slider-val" id="invest-val" style="font-size:15px;font-weight:700;color:var(--blue-deeper);">1,000만원</span>
+            </div>
+            <input type="range" id="invest" min="0" max="20000" step="100" value="1000" oninput="document.getElementById('invest-val').textContent=parseInt(this.value).toLocaleString()+'만원'">
+            <div class="slider-labels"><span>0원</span><span>2억원</span></div>
+          </div>
+        </div>
+
+        <div style="padding:16px 20px;">
+          <button class="cta-btn" onclick="goStep(2)">다음 단계 → 목돈 계획</button>
+        </div>
       </div>
-      <div class="save-box">
-        <div class="save-icon">💰</div>
-        <div><div class="save-title">최적 전략 사용 시 연간 절약 가능</div><div class="save-amount" id="save-amt">0만원/년</div><div class="save-period" id="save-period"></div></div>
+    </div>
+
+    <!-- STEP 2: 목돈 계획 + 투자 목적 -->
+    <div class="step-panel" id="step-2" style="display:none;">
+      <div class="card">
+        <div class="card-head">
+          <div class="sec-tag">STEP 2 · 목돈 계획</div>
+          <div class="sec-title">언제 목돈이 필요한가요?</div>
+          <div class="sec-desc">시기에 따라 추천 계좌가 달라져요 — 단기면 ISA, 장기면 IRP가 유리해요</div>
+        </div>
+        <div class="grid-2">
+          <div class="sel-btn selected" data-liq="1" onclick="selectLiq(this)"><div class="btn-title">🏠 1~3년 내</div><div class="btn-desc">전세·보증금·취업 준비</div></div>
+          <div class="sel-btn" data-liq="3" onclick="selectLiq(this)"><div class="btn-title">💍 3~5년 내</div><div class="btn-desc">결혼 준비·집 마련</div></div>
+          <div class="sel-btn" data-liq="5" onclick="selectLiq(this)"><div class="btn-title">📈 5~10년 내</div><div class="btn-desc">내 집 마련·사업 자금</div></div>
+          <div class="sel-btn" data-liq="10" onclick="selectLiq(this)"><div class="btn-title">🌅 10년 이후</div><div class="btn-desc">노후 준비·장기 자산</div></div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="card-head" style="padding-top:16px;">
+          <div class="sec-tag">투자 목적</div>
+          <div class="sec-desc" style="margin-bottom:12px;">지금 투자에서 가장 중요한 게 뭔가요?</div>
+        </div>
+        <div class="pur-grid" style="margin-bottom:16px;">
+          <button class="pur-btn selected" data-pur="save" onclick="selectPur(this)">💰 목돈 모으기</button>
+          <button class="pur-btn" data-pur="tax" onclick="selectPur(this)">🧾 세금 아끼기</button>
+          <button class="pur-btn" data-pur="retire" onclick="selectPur(this)">🌅 노후 준비</button>
+          <button class="pur-btn" data-pur="invest" onclick="selectPur(this)">📈 자산 불리기</button>
+        </div>
+
+        <div style="padding:0 20px 16px;display:flex;gap:10px;">
+          <button onclick="goStep(1)" style="flex:0 0 auto;height:50px;padding:0 18px;background:#F1F5F9;color:var(--text-muted);border:none;border-radius:12px;font-size:14px;cursor:pointer;font-family:Noto Sans KR,sans-serif;">← 이전</button>
+          <button class="cta-btn" onclick="goStep(3)" style="flex:1;">다음 단계 → 현재 계좌</button>
+        </div>
       </div>
-      <div class="age-tip" id="age-tip"></div>
-      <div class="rec-title">📋 내 상황 맞춤 추천 전략</div>
-      <div class="rec-list" id="rec-list"></div>
-      <div class="info-note">💡 <strong>계산 기준:</strong> 총급여 5,500만원 이하 세액공제율 16.5%, 초과 시 13.2% 적용. 금융소득종합과세 대상자(금융소득 2,000만원 초과)는 ISA 신규 가입이 제한될 수 있어요. 본 계산은 참고용이며 전문가 상담을 권장합니다.</div>
-      <div class="share-box">
-        <div class="share-main" id="share-main"></div>
-        <div class="share-sub">친구도 모르고 손해보고 있을 수 있어요! 같이 확인해봐요 😄</div>
-        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px;">
-          <button onclick="shareKakao('calc')" style="background:#FEE500;color:#3A1D1D;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:6px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#3A1D1D"><path d="M12 2C6.48 2 2 5.92 2 10.8c0 3.1 1.74 5.84 4.37 7.52L5.5 22l4.13-2.16C10.39 20.27 11.19 20.4 12 20.4c5.52 0 10-3.92 10-8.8S17.52 2 12 2z"/></svg>
-            카카오톡 공유
-          </button>
-          <button onclick="shareInstagram()" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:6px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="white" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="white"/></svg>
-            인스타그램 공유
-          </button>
-          <button onclick="shareLink()" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:6px;">
-            🔗 링크 복사
-          </button>
+    </div>
+
+    <!-- STEP 3: 현재 계좌 -->
+    <div class="step-panel" id="step-3" style="display:none;">
+      <div class="card">
+        <div class="card-head">
+          <div class="sec-tag">STEP 3 · 현재 계좌</div>
+          <div class="sec-title">지금 어떤 계좌를 쓰고 있나요?</div>
+          <div class="sec-desc">현재 계좌를 알아야 얼마나 손해보고 있는지 계산할 수 있어요</div>
+        </div>
+        <div class="grid-2" style="margin-bottom:16px;">
+          <div class="sel-btn" data-acc="isa" id="acc-isa" onclick="toggleAcc(this)">
+            <div class="btn-title">ISA</div>
+            <div class="btn-desc">비과세 + 언제든 인출 가능</div>
+          </div>
+          <div class="sel-btn" data-acc="irp" onclick="toggleAcc(this)">
+            <div class="btn-title">IRP</div>
+            <div class="btn-desc">세액공제 최대 148만원</div>
+            <div class="btn-warn" id="warn-irp"></div>
+          </div>
+          <div class="sel-btn" data-acc="pension" onclick="toggleAcc(this)">
+            <div class="btn-title">연금저축</div>
+            <div class="btn-desc">세액공제 + ETF 투자</div>
+            <div class="btn-warn" id="warn-pension"></div>
+          </div>
+          <div class="sel-btn" data-acc="cma" onclick="toggleAcc(this)">
+            <div class="btn-title">CMA</div>
+            <div class="btn-desc">수시입출금 단기 자금</div>
+          </div>
+        </div>
+        <div class="acc-warning" id="acc-warning"></div>
+        <div style="padding:0 20px 16px;">
+          <div style="padding:11px 13px;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--text-muted);margin-bottom:14px;">
+            💡 없어도 괜찮아요! 그냥 다음 버튼 눌러도 돼요.
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button onclick="goStep(2)" style="flex:0 0 auto;height:50px;padding:0 18px;background:#F1F5F9;color:var(--text-muted);border:none;border-radius:12px;font-size:14px;cursor:pointer;font-family:Noto Sans KR,sans-serif;">← 이전</button>
+            <button class="cta-btn" onclick="calculate()" style="flex:1;">📊 내 절세 손실액 계산하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: 결과 -->
+    <div class="step-panel" id="step-4" style="display:none;">
+      <div class="result-wrap show" id="result">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div class="profile-chip" id="profile-chip"></div>
+          <button onclick="goStep(1)" style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;font-family:Noto Sans KR,sans-serif;text-decoration:underline;">다시 입력하기</button>
+        </div>
+        <div class="loss-box">
+          <div class="loss-label">⚠️ 현재 연간 절세 손실액</div>
+          <div class="loss-amount" id="loss-amt"><span>약 </span>0<span>만원</span></div>
+          <div class="loss-sub" id="loss-sub"></div>
+        </div>
+        <div class="save-box">
+          <div class="save-icon">💰</div>
+          <div><div class="save-title">최적 전략 사용 시 연간 절약 가능</div><div class="save-amount" id="save-amt">0만원/년</div><div class="save-period" id="save-period"></div></div>
+        </div>
+        <div class="age-tip" id="age-tip"></div>
+        <div class="rec-title">📋 내 상황 맞춤 추천 전략</div>
+        <div class="rec-list" id="rec-list"></div>
+        <div class="info-note">💡 <strong>계산 기준:</strong> 총급여 5,500만원 이하 세액공제율 16.5%, 초과 시 13.2% 적용. 금융소득종합과세 대상자(금융소득 2,000만원 초과)는 ISA 신규 가입이 제한될 수 있어요. 본 계산은 참고용이며 전문가 상담을 권장합니다.</div>
+        <div class="share-box">
+          <div class="share-main" id="share-main"></div>
+          <div class="share-sub">친구도 모르고 손해보고 있을 수 있어요! 같이 확인해봐요 😄</div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px;">
+            <button onclick="shareKakao('calc')" style="background:#FEE500;color:#3A1D1D;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;display:flex;align-items:center;gap:6px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#3A1D1D"><path d="M12 2C6.48 2 2 5.92 2 10.8c0 3.1 1.74 5.84 4.37 7.52L5.5 22l4.13-2.16C10.39 20.27 11.19 20.4 12 20.4c5.52 0 10-3.92 10-8.8S17.52 2 12 2z"/></svg>
+              카카오톡 공유
+            </button>
+            <button onclick="shareInstagram()" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;">인스타그램</button>
+            <button onclick="shareLink()" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:Noto Sans KR,sans-serif;">🔗 링크 복사</button>
+          </div>
         </div>
       </div>
     </div>
@@ -540,6 +673,77 @@ footer{text-align:center;padding:28px 24px;font-size:11px;color:var(--text-light
         <div id="suggestions" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
 
+      <!-- 위험 요인 분석 -->
+      <div class="card" style="padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">⚠️ 내 포트폴리오가 위험한 이유</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">숫자가 아니라 "왜"를 알려드려요</div>
+        <div id="risk-reasons" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- 금리 시나리오 -->
+      <div class="card" style="padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">📉 금리 변화 시나리오</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">미국 금리가 오르거나 내리면 내 포트폴리오에 어떤 영향이 생길까요?</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="rate-scenarios"></div>
+        <div id="rate-comment" style="margin-top:12px;padding:11px 13px;border-radius:10px;font-size:12px;line-height:1.6;"></div>
+      </div>
+
+      <!-- ETF 중복도 분석 -->
+      <div class="card" style="padding:20px;" id="etf-overlap-card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">🔍 ETF 중복 종목 분석</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">여러 ETF를 보유할 때 겹치는 종목이 생겨요. 실제 분산이 얼마나 되는지 확인해보세요.</div>
+        <div id="etf-overlap-content"></div>
+      </div>
+
+      <!-- 지역 밸런스 -->
+      <div class="card" style="padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">🌏 미국 / 한국 / 기타 자산 밸런스</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">국가별 자산 비중을 확인하고 분산이 잘 됐는지 체크해요</div>
+        <div id="region-balance" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+        <div id="region-comment" style="padding:11px 13px;border-radius:10px;font-size:12px;line-height:1.6;"></div>
+      </div>
+
+      <!-- 투자 성향 분석 -->
+      <div class="card" style="padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">🧠 투자 성향 분석</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">포트폴리오 구성으로 투자 성향을 파악해드려요</div>
+        <div id="invest-style" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+
+      <!-- 월급 기반 적립식 전략 -->
+      <div class="card" style="padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">💸 월급 기반 적립식 전략</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">매월 얼마씩 어디에 넣으면 좋을지 알려드려요</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:5px;">월 투자 가능 금액</div>
+            <div style="position:relative;">
+              <input type="number" id="monthly-input" placeholder="예: 30" min="0"
+                style="width:100%;height:40px;border:1.5px solid var(--border);border-radius:10px;padding:0 40px 0 12px;font-size:13px;font-family:Noto Sans KR,sans-serif;background:#F8FAFC;outline:none;"
+                oninput="calcMonthlyStrategy()">
+              <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text-muted);">만원</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:5px;">투자 목표 기간</div>
+            <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+              <button class="period-preset" onclick="setPeriodPreset(3)" style="padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">3개월</button>
+              <button class="period-preset" onclick="setPeriodPreset(6)" style="padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">6개월</button>
+              <button class="period-preset" onclick="setPeriodPreset(12)" style="padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">1년</button>
+              <button class="period-preset" onclick="setPeriodPreset(36)" style="padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">3년</button>
+              <button class="period-preset" onclick="setPeriodPreset(120)" style="padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--border);background:white;color:var(--text-muted);cursor:pointer;font-family:Noto Sans KR,sans-serif;">10년</button>
+            </div>
+            <div style="position:relative;">
+              <input type="number" id="target-months" placeholder="예: 12" min="1" max="480"
+                style="width:100%;height:40px;border:1.5px solid var(--border);border-radius:10px;padding:0 44px 0 12px;font-size:13px;font-family:Noto Sans KR,sans-serif;background:#F8FAFC;outline:none;"
+                oninput="calcMonthlyStrategy()">
+              <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text-muted);">개월</span>
+            </div>
+          </div>
+        </div>
+        <div id="monthly-strategy" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
       <div style="background:var(--blue-dark);border-radius:14px;padding:18px;text-align:center;margin-top:4px;">
         <div style="font-size:13px;font-weight:700;color:white;margin-bottom:3px;">분석 결과 공유하기</div>
         <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:14px;">친구 포트폴리오도 함께 점검해봐요!</div>
@@ -589,6 +793,53 @@ footer{text-align:center;padding:28px 24px;font-size:11px;color:var(--text-light
 </footer>
 
 <script>
+// ===== 절세 진단 스텝 =====
+let currentStep = 1;
+
+function goStep(n) {
+  // 유효성 검사
+  if(n === 2) {
+    const age = parseInt(document.getElementById('age').value);
+    if(!age || age < 10 || age > 100) {
+      showToast('나이를 입력해주세요!'); return;
+    }
+  }
+
+  currentStep = n;
+
+  // 모든 패널 숨기기
+  document.querySelectorAll('.step-panel').forEach(p => p.style.display = 'none');
+
+  // 해당 패널 보이기
+  const panel = document.getElementById('step-' + n);
+  if(panel) {
+    panel.style.display = 'block';
+    panel.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  // 스텝 인디케이터 업데이트
+  for(let i = 1; i <= 4; i++) {
+    const ind = document.getElementById('step-ind-' + i);
+    if(!ind) continue;
+    ind.classList.remove('active','done');
+    if(i < n) ind.classList.add('done');
+    else if(i === n) ind.classList.add('active');
+    // 동그라미 텍스트
+    const circle = ind.querySelector('.step-circle');
+    if(circle) circle.textContent = i < n ? '✓' : i;
+  }
+
+  // 라인 업데이트
+  for(let i = 1; i <= 3; i++) {
+    const line = document.getElementById('step-line-' + i);
+    if(!line) continue;
+    line.classList.toggle('done', i < n);
+  }
+}
+
+// calculate 함수 호출 후 step 4로 이동
+const _origCalc = typeof calculate === 'function' ? calculate : null;
+
 // ===== 탭 전환 =====
 function showSection(id, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -606,6 +857,219 @@ function showSection(id, el) {
 // ===== 절세 진단 =====
 let liq=1, pur='save', isVIP=false;
 const accs=new Set();
+
+function setReturn(val) {
+  document.getElementById('expected-return').value = val;
+  onInvestAsset();
+}
+
+function onInvestAsset() {
+  const asset = parseFloat(document.getElementById('invest-asset').value) || 0;
+  const ret = parseFloat(document.getElementById('expected-return').value) || 8;
+  const salary = parseFloat(document.getElementById('salary').value) || 0;
+  const preview = document.getElementById('account-compare-preview');
+  if (asset <= 0) { preview.style.display='none'; return; }
+
+  const taxRate = salary > 0 && salary <= 5500 ? 0.165 : salary > 5500 ? 0.132 : 0.165;
+  const annualGain = asset * ret / 100; // 연간 기대 수익
+
+  // 1. 일반 계좌 — 배당소득세 15.4% (분리과세 기준)
+  const normalTax = annualGain * 0.154;
+  const normalNet = annualGain - normalTax;
+
+  // 2. ISA — 200만원 비과세, 초과분 9.9% 분리과세
+  const isaFreeLimit = isVIP ? 0 : 200; // 금융소득종합과세 대상자는 ISA 불가
+  const isaGain = Math.min(asset, 20000) * ret / 100;
+  const isaTaxable = Math.max(isaGain - isaFreeLimit, 0);
+  const isaTax = isaTaxable * 0.099;
+  const isaNet = isaGain - isaTax;
+  const isaSave = normalTax - isaTax;
+
+  // 3. IRP — 운용수익 과세이연 + 세액공제
+  const irpContrib = Math.min(asset * 0.1, 900); // 연 납입 가능 금액 (자산의 10% or 900만원)
+  const irpTaxDeduct = Math.round(irpContrib * taxRate); // 세액공제
+  const irpGain = Math.min(asset, 18000) * ret / 100;
+  const irpTax = irpGain * 0.033; // 연금 수령 시 3.3~5.5%, 평균 3.3% 가정
+  const irpSave = normalTax - irpTax + irpTaxDeduct;
+
+  // 4. 연금저축 — IRP 유사하나 한도 다름
+  const pensionContrib = Math.min(asset * 0.1, 600);
+  const pensionDeduct = Math.round(pensionContrib * taxRate);
+  const pensionGain = Math.min(asset, 18000) * ret / 100;
+  const pensionTax = pensionGain * 0.033;
+  const pensionSave = normalTax - pensionTax + pensionDeduct;
+
+  // 5. 최적 조합
+  const bestSave = isVIP
+    ? Math.max(irpSave, pensionSave)
+    : Math.max(isaSave, irpSave, isaSave * 0.6 + irpSave * 0.4);
+
+  // 나이·유동성 반영
+  const age = parseInt(document.getElementById('age').value) || 30;
+  const yearsToUnlock = Math.max(0, 55 - age);
+  const isYoung = age < 27;
+  const isMid = age >= 27 && age < 40;
+  // 유동성 가중치 — 단기 목돈 계획이면 IRP/연금저축 실질 가치 하락
+  const liqPenalty = liq <= 3 ? 0.05 : liq <= 5 ? 0.4 : 1.0; // 단기면 IRP 절세효과 크게 낮춤
+
+  // IRP·연금저축: 나이·유동성 고려한 실질 절세
+  const irpRealSave = Math.round(irpSave * liqPenalty);
+  const pensionRealSave = Math.round(pensionSave * liqPenalty);
+
+  // IRP·연금저축 경고 메시지
+  const longTermWarn = yearsToUnlock > 0
+    ? `⚠️ ${yearsToUnlock}년 후 인출 가능 — 중도 해지 시 세금 16.5% 부과`
+    : '만 55세 이후 연금 수령 가능';
+
+  const accounts = [
+    {
+      name: '일반계좌',
+      icon: '📋',
+      tax: Math.round(normalTax),
+      net: Math.round(normalNet),
+      save: 0,
+      realSave: 0,
+      color: '#64748B',
+      bg: '#F8FAFC',
+      bc: 'var(--border)',
+      desc: '배당·이자 수익에 15.4% 세금 자동 부과',
+      warn: '',
+      locked: false,
+    },
+    ...(isVIP ? [] : [{
+      name: 'ISA',
+      icon: '🏦',
+      tax: Math.round(isaTax),
+      net: Math.round(isaNet),
+      save: Math.round(isaSave),
+      realSave: Math.round(isaSave),
+      color: '#0EA5E9',
+      bg: '#EFF6FF',
+      bc: '#BAE6FD',
+      desc: `연 200만원 비과세 + 초과분 9.9% 절감 · 언제든 인출 가능`,
+      warn: '',
+      locked: false,
+    }]),
+    {
+      name: 'IRP',
+      icon: '💼',
+      tax: Math.round(irpTax),
+      net: Math.round(irpGain - irpTax),
+      save: Math.round(irpSave),
+      realSave: irpRealSave,
+      color: liq <= 3 ? '#94A3B8' : '#F97316',
+      bg: liq <= 3 ? '#F8FAFC' : '#FFF7ED',
+      bc: liq <= 3 ? 'var(--border)' : '#FED7AA',
+      desc: `세액공제 ${irpTaxDeduct.toLocaleString()}만원 + 운용수익 과세이연`,
+      warn: longTermWarn,
+      locked: liq <= 3,
+    },
+    {
+      name: '연금저축',
+      icon: '🌅',
+      tax: Math.round(pensionTax),
+      net: Math.round(pensionGain - pensionTax),
+      save: Math.round(pensionSave),
+      realSave: pensionRealSave,
+      color: liq <= 3 ? '#94A3B8' : '#10B981',
+      bg: liq <= 3 ? '#F8FAFC' : '#ECFDF5',
+      bc: liq <= 3 ? 'var(--border)' : '#A7F3D0',
+      desc: `세액공제 ${pensionDeduct.toLocaleString()}만원 + ETF 자유 투자`,
+      warn: longTermWarn,
+      locked: liq <= 3,
+    },
+  ];
+
+  // 추천 배지 — 실질 절세 효과 기준 (나이·유동성 반영)
+  const maxRealSave = Math.max(...accounts.map(a=>a.realSave));
+  accounts.forEach(a => {
+    a.badge = (a.realSave === maxRealSave && maxRealSave > 0 && !a.locked) ? '최고 절세 ✓' : '';
+  });
+  const maxSaveAcc = accounts.find(a=>a.badge) || accounts[0];
+
+  preview.style.display = 'block';
+  preview.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;">
+      📊 투자자산 ${asset.toLocaleString()}만원 기준 계좌별 절세 비교
+      <span style="font-size:10px;font-weight:400;color:var(--text-muted);margin-left:4px;">연 기대수익률 ${ret}% 기준</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+      ${accounts.map(a=>`
+        <div style="background:${a.bg};border:${a.badge?'2px':'1.5px'} solid ${a.badge?a.color:a.bc};border-radius:14px;padding:14px 16px;opacity:${a.locked?'0.6':'1'};">
+
+          <!-- 헤더: 아이콘 + 이름 + 배지 + 절세액 -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:20px;">${a.icon}</span>
+              <div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span style="font-size:14px;font-weight:700;color:${a.color};">${a.name}</span>
+                  ${a.badge ? `<span style="font-size:10px;font-weight:700;background:${a.color};color:white;padding:3px 9px;border-radius:20px;">${a.badge}</span>` : ''}
+                  ${a.locked ? `<span style="font-size:10px;font-weight:500;background:#F1F5F9;color:#94A3B8;padding:2px 8px;border-radius:20px;">🔒 단기 비추천</span>` : ''}
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${a.desc}</div>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:8px;">
+              <div style="font-size:9px;color:var(--text-muted);margin-bottom:2px;">${a.locked ? '실질 절세 (유동성 고려)' : '연간 절세액'}</div>
+              <div style="font-size:18px;font-weight:900;color:${a.realSave>0?'var(--green)':'#94A3B8'};">
+                ${a.realSave > 0 ? '+' + a.realSave.toLocaleString() + '만원' : '기준'}
+              </div>
+              ${a.save !== a.realSave && a.save > 0 ? `<div style="font-size:9px;color:var(--text-muted);text-decoration:line-through;">명목 +${a.save.toLocaleString()}만원</div>` : ''}
+            </div>
+          </div>
+
+          <!-- 세부 수치 -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:${a.warn?'8px':'0'};">
+            <div style="background:white;border-radius:8px;padding:8px 10px;border:1px solid var(--border);">
+              <div style="font-size:9px;color:var(--text-muted);margin-bottom:2px;">연간 세금</div>
+              <div style="font-size:13px;font-weight:700;color:#EF4444;">${a.tax.toLocaleString()}만원</div>
+            </div>
+            <div style="background:white;border-radius:8px;padding:8px 10px;border:1px solid var(--border);">
+              <div style="font-size:9px;color:var(--text-muted);margin-bottom:2px;">세후 수익</div>
+              <div style="font-size:13px;font-weight:700;color:var(--green);">${a.net.toLocaleString()}만원</div>
+            </div>
+          </div>
+
+          <!-- 인출 제한 경고 -->
+          ${a.warn ? `<div style="background:${a.locked?'#FEF9C3':'#FFF7ED'};border:1px solid ${a.locked?'#FDE68A':'#FED7AA'};border-radius:8px;padding:7px 10px;font-size:11px;color:${a.locked?'#92400E':'#78350F'};line-height:1.4;">${a.warn}</div>` : ''}
+        </div>`).join('')}
+    </div>
+
+    <!-- 최적 전략 요약 박스 -->
+    <div style="background:var(--navy);border-radius:14px;padding:16px 18px;color:white;">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;">🏆 내 상황 최적 절세 전략</div>
+      ${(() => {
+        if(isVIP) return `
+          <div style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.7;">
+            금융소득종합과세 대상자 → ISA 가입 불가<br>
+            <strong style="color:#FDBA74;">IRP + 연금저축</strong>으로 세액공제 최대화<br>
+            연간 <strong style="color:#FDBA74;">최대 ${Math.round(Math.max(irpRealSave,pensionRealSave)).toLocaleString()}만원</strong> 절세 가능
+          </div>`;
+        if(isYoung && liq <= 3) return `
+          <div style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.7;">
+            20대 + 단기 목돈 계획 → <strong style="color:#FDBA74;">ISA가 정답</strong><br>
+            IRP·연금저축은 55세까지 묶여요. 지금은 ISA에 집중하세요.<br>
+            ISA ${Math.min(asset,2000).toLocaleString()}만원 활용 시 연간 <strong style="color:#FDBA74;">+${Math.round(isaSave).toLocaleString()}만원</strong> 절세
+          </div>`;
+        if(isMid && liq <= 5) return `
+          <div style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.7;">
+            <strong style="color:#FDBA74;">ISA 우선 + IRP 소액 병행</strong> 추천<br>
+            목돈 자금은 ISA에, 여유 자금은 IRP로 분리 운용<br>
+            연간 <strong style="color:#FDBA74;">최대 ${Math.round(Math.max(isaSave, irpRealSave * 0.5 + isaSave * 0.5)).toLocaleString()}만원</strong> 절세 가능
+          </div>`;
+        return `
+          <div style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.7;">
+            <strong style="color:#FDBA74;">ISA + IRP + 연금저축 풀 활용</strong><br>
+            ISA ${Math.min(asset,2000).toLocaleString()}만원 + IRP ${Math.min(irpContrib,900).toFixed(0)}만원<br>
+            연간 <strong style="color:#FDBA74;">최대 ${Math.round(bestSave).toLocaleString()}만원</strong> 절세 가능
+          </div>`;
+      })()}
+    </div>
+    <div style="margin-top:8px;font-size:10px;color:var(--text-muted);line-height:1.5;padding:8px 10px;background:#F8FAFC;border-radius:8px;border:1px solid var(--border);">
+      ※ 위 계산은 참고용 추정치예요. 실제 세금은 수익 유형(배당/양도차익), 계좌 납입 한도, 개인 세율에 따라 달라져요. 정확한 절세 계획은 세무사와 상담하세요.
+    </div>`;
+}
 
 function onAge(v) {
   const age=parseInt(v), b=document.getElementById('age-badge');
@@ -676,7 +1140,9 @@ function calculate() {
   const ul=document.getElementById('rec-list');ul.innerHTML='';
   recs.slice(0,3).forEach((r,i)=>{const d=document.createElement('div');d.className='rec-item'+(i===0?' top':'');d.innerHTML=`<div class="rec-left"><div class="rec-num n${i+1}">${i+1}</div><div><div class="rec-name">${r.name}${i===0?'<span class="best-tag">최우선</span>':''}</div><div class="rec-why">${r.why}</div></div></div><div class="rec-right"><div class="rec-save-amt">+${r.save.toLocaleString()}만원</div><div class="rec-save-lbl">연간 절세</div></div>`;ul.appendChild(d);});
   document.getElementById('result').classList.add('show');
-  setTimeout(()=>document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  // 스텝 4로 이동
+  goStep(4);
+  setTimeout(()=>document.getElementById('step-4').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
 function buildRecs(ag,invest,taxRate,hasISA,hasIRP,hasPen,liq,total,irpSave,isaSave,vip){
@@ -1174,6 +1640,10 @@ function analyzePortfolio(){
 
   document.getElementById('suggestions').innerHTML=sug.map(s=>`<div class="suggest-item"><div class="suggest-icon" style="background:${s.bg}">${s.icon}</div><div><div class="suggest-title">${s.title}</div><div class="suggest-desc">${s.desc}</div></div></div>`).join('');
 
+  // 고급 분석 렌더링
+  renderAdvancedAnalysis(holdings, rw, sw, annualReturn, mdd, beta, volatility, numAssets, cryptoPct, scoreR);
+  calcMonthlyStrategy();
+
   setTimeout(()=>document.getElementById('portfolio-result').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 }
 
@@ -1182,51 +1652,434 @@ function toggleDetailMetrics(){const d=document.getElementById('detail-metrics')
 renderETF();
 renderAccounts();
 
+// ===== ETF 보유 종목 DB (중복도 분석용) =====
+const etfHoldingsDB = {
+  'TIGER 미국S&P500':    {애플:7.2,마이크로소프트:6.8,엔비디아:6.1,아마존:3.5,알파벳:2.2,메타:2.1,테슬라:1.8,버크셔:1.6,유나이티드헬스:1.4,JP모간:1.3},
+  'KODEX 미국S&P500':   {애플:7.1,마이크로소프트:6.7,엔비디아:6.0,아마존:3.4,메타:2.5,알파벳:2.1,테슬라:1.7,버크셔:1.6,유나이티드헬스:1.4,JP모간:1.2},
+  'TIGER 미국나스닥100': {애플:12.1,마이크로소프트:11.8,엔비디아:10.2,아마존:5.3,메타:4.8,알파벳:4.2,테슬라:2.8,브로드컴:2.4,코스트코:1.8,어도비:1.6},
+  'KODEX 미국나스닥100': {애플:12.0,마이크로소프트:11.6,엔비디아:10.1,아마존:5.2,메타:4.7,알파벳:4.1,테슬라:2.7,브로드컴:2.3,코스트코:1.7,어도비:1.5},
+  'KODEX 코스피200':    {삼성전자:28.4,SK하이닉스:8.2,LG에너지솔루션:4.1,현대차:3.8,기아:2.9,삼성바이오:3.2,셀트리온:2.1,POSCO:2.0,KB금융:1.8,신한지주:1.6},
+  'TIGER 코스피200':    {삼성전자:28.2,SK하이닉스:8.1,LG에너지솔루션:4.0,현대차:3.7,기아:2.8,삼성바이오:3.1,셀트리온:2.0,POSCO:1.9,KB금융:1.7,신한지주:1.5},
+  'SPY':                {애플:7.2,마이크로소프트:6.8,엔비디아:5.9,아마존:3.5,메타:2.4,알파벳:2.2,테슬라:1.8,버크셔:1.6,유나이티드헬스:1.4,JP모간:1.3},
+  'QQQ':                {애플:12.8,마이크로소프트:12.1,엔비디아:10.8,아마존:5.6,메타:5.0,알파벳:4.5,테슬라:3.0,브로드컴:2.5,코스트코:1.9,어도비:1.7},
+  'VTI':                {애플:6.8,마이크로소프트:6.4,엔비디아:5.2,아마존:3.2,알파벳:2.1,메타:2.0,테슬라:1.6,버크셔:1.5,유나이티드헬스:1.3,JP모간:1.2},
+  'VOO':                {애플:7.1,마이크로소프트:6.7,엔비디아:5.8,아마존:3.4,알파벳:2.2,메타:2.3,테슬라:1.7,버크셔:1.5,유나이티드헬스:1.3,JP모간:1.2},
+};
+
+// 종목별 지역 분류
+const regionMap = {
+  '삼성전자':1,'SK하이닉스':1,'LG에너지솔루션':1,'현대차':1,'기아':1,'카카오':1,'NAVER':1,'삼성바이오로직스':1,'셀트리온':1,'POSCO홀딩스':1,'에코프로비엠':1,'에코프로':1,'HLB':1,'KB금융':1,'신한지주':1,'하나금융그룹':1,'LG화학':1,'SK텔레콤':1,'KT':1,
+  'KODEX 코스피200':1,'TIGER 코스피200':1,'KODEX 코스닥150':1,'TIGER 현대차그룹+':1,'KODEX 삼성그룹':1,'TIGER 200 IT':1,'KODEX 배당성장':1,
+  'TIGER 미국S&P500':2,'KODEX 미국S&P500':2,'TIGER 미국나스닥100':2,'KODEX 미국나스닥100':2,'TIGER 미국S&P500TR':2,'ACE 미국S&P500':2,'KODEX 미국배당다우존스':2,'KODEX 미국Russell2000':2,'KODEX 미국AI반도체나스닥':2,'TIGER 미국배당+3%프리미엄다우존스':2,
+  '애플 (AAPL)':2,'마이크로소프트 (MSFT)':2,'엔비디아 (NVDA)':2,'아마존 (AMZN)':2,'알파벳 (GOOGL)':2,'메타 (META)':2,'테슬라 (TSLA)':2,'버크셔해서웨이 (BRK.B)':2,'JP모간 (JPM)':2,'비자 (V)':2,
+  'SPY':2,'QQQ':2,'VTI':2,'VOO':2,'SCHD':2,'JEPI':2,'SOXL':2,'AGG':2,'VNQ':2,'GLD':2,
+  'TIGER 선진국MSCI World':3,'KODEX MSCI신흥국':3,'TIGER 일본니케이225':3,'KODEX 유럽STOXX50':3,'TIGER 차이나항셍테크':3,
+  '비트코인 (BTC)':4,'이더리움 (ETH)':4,'리플 (XRP)':4,
+  'KODEX 단기채권PLUS':5,'TIGER 단기채권액티브':5,'KODEX 국고채10년':5,'TIGER 미국채10년선물':5,'KODEX 회사채플러스':5,
+  'TIGER 리츠부동산인프라':3,'KODEX 한국부동산리츠인프라':3,
+};
+// 1=한국, 2=미국, 3=글로벌/기타, 4=코인, 5=채권/현금
+
+// ===== 고급 분석 함수들 =====
+
+function renderAdvancedAnalysis(holdings, rw, sw, annualReturn, mdd, beta, volatility, numAssets, cryptoPct, score) {
+
+  // 1. 위험 요인 분석
+  const reasons = [];
+  if(cryptoPct > 15) reasons.push({icon:'🪙',color:'#FFF7ED',bc:'#FED7AA',tc:'#92400E',title:`코인 비중 ${cryptoPct}%`,desc:'암호화폐는 하루에 30~50% 폭락할 수 있어요. 전체 포트폴리오의 5~10% 이내가 권장이에요.'});
+  if(numAssets < 3) reasons.push({icon:'🎯',color:'#FFF1F2',bc:'#FECDD3',tc:'#9F1239',title:`${numAssets}개 종목에 집중`,desc:'달걀을 한 바구니에 담으면 하나가 깨졌을 때 전부 잃어요. 최소 4~5개로 분산해보세요.'});
+  if(rw > 0.85) reasons.push({icon:'⚡',color:'#FFF7ED',bc:'#FED7AA',tc:'#92400E',title:'위험자산 비중 85% 초과',desc:'시장이 30% 폭락하면 내 포트폴리오도 비슷하게 떨어져요. 채권이나 예금을 10~20% 추가하면 충격을 줄일 수 있어요.'});
+  if(mdd < -30) reasons.push({icon:'📉',color:'#FFF1F2',bc:'#FECDD3',tc:'#9F1239',title:`최대 ${Math.abs(mdd)}% 낙폭 가능`,desc:'과거 유사 포트폴리오가 최대 이 정도 떨어진 적이 있어요. 이 손실을 버틸 수 있는지 생각해보세요.'});
+  if(beta > 1.3) reasons.push({icon:'🎢',color:'#FDF4FF',bc:'#E9D5FF',tc:'#7E22CE',title:`베타 ${beta} — 시장보다 변동성 큼`,desc:`코스피/S&P500이 10% 떨어지면 내 포트폴리오는 약 ${(beta*10).toFixed(0)}% 떨어질 수 있어요.`});
+  // 점수와 연동 — 점수가 낮으면 일반적 위험 요인도 추가
+  if(reasons.length === 0) {
+    if(score >= 8.5) {
+      reasons.push({icon:'✅',color:'var(--green-light)',bc:'var(--green-border)',tc:'#065F46',title:'위험 요인 없음',desc:'현재 포트폴리오에서 심각한 위험 요인이 발견되지 않았어요. 아주 좋은 구성이에요!'});
+    } else if(score >= 7) {
+      reasons.push({icon:'📌',color:'#EFF6FF',bc:'var(--border-blue)',tc:'var(--blue-deeper)',title:'소소한 개선 여지 있음',desc:'심각한 위험은 없지만 분산도나 수익 효율을 조금 더 높일 수 있어요. 아래 개선 제안을 참고해보세요.'});
+    } else if(score >= 5) {
+      reasons.push({icon:'⚠️',color:'#FFF7ED',bc:'#FED7AA',tc:'#92400E',title:'전반적인 효율 개선 필요',desc:'특정 위험 요인은 없지만 위험 대비 수익 효율(샤프지수)이 낮아요. 분산을 늘리거나 저수수료 ETF 중심으로 재편해보세요.'});
+      reasons.push({icon:'📉',color:'#FFF7ED',bc:'#FED7AA',tc:'#92400E',title:'리밸런싱 시점 검토 필요',desc:'자산 비중이 목표 배분에서 벗어났을 수 있어요. 6~12개월마다 비중을 재조정하는 리밸런싱을 권장해요.'});
+    } else {
+      reasons.push({icon:'🔴',color:'#FFF1F2',bc:'#FECDD3',tc:'#9F1239',title:'포트폴리오 구조 재검토 권장',desc:'종합 점수가 낮아요. 분산이 부족하거나 비용(수수료)이 높은 자산이 포함되어 있을 수 있어요. 아래 개선 제안을 꼭 확인해주세요.'});
+      reasons.push({icon:'⚡',color:'#FFF1F2',bc:'#FECDD3',tc:'#9F1239',title:'위험 대비 수익 균형 재조정 필요',desc:'지금 구성으로는 감수하는 위험에 비해 기대 수익이 낮아요. 저수수료 지수 ETF 비중을 늘려보세요.'});
+    }
+  }
+
+  document.getElementById('risk-reasons').innerHTML = reasons.map(r=>`
+    <div style="background:${r.color};border:1px solid ${r.bc};border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;">
+      <span style="font-size:18px;flex-shrink:0;">${r.icon}</span>
+      <div><div style="font-size:12px;font-weight:700;color:${r.tc};margin-bottom:3px;">${r.title}</div><div style="font-size:11px;color:${r.tc};opacity:0.85;line-height:1.5;">${r.desc}</div></div>
+    </div>`).join('');
+
+  // 2. 금리 시나리오
+  const bondPct = holdings.filter(h=>h.type==='채권'||(h.name||'').includes('채권')||(h.name||'').includes('bond')).reduce((s,h)=>s+(parseFloat(h.pct)||0),0);
+  const usBondPct = holdings.filter(h=>(h.name||'').includes('미국채')||(h.name||'').includes('AGG')).reduce((s,h)=>s+(parseFloat(h.pct)||0),0);
+  const rateUpStock = -(rw * 8 + usBondPct * 0.12).toFixed(1);
+  const rateDownStock = (rw * 6 + usBondPct * 0.1).toFixed(1);
+  const scenarios = [
+    {label:'금리 급등 (+1%)',icon:'📈',impact:rateUpStock,color:parseFloat(rateUpStock)<0?'#EF4444':'#10B981',bg:parseFloat(rateUpStock)<0?'#FFF1F2':'#ECFDF5',desc:'주식·채권 동반 하락 가능'},
+    {label:'금리 동결',icon:'➡️',impact:'±0',color:'#64748B',bg:'#F8FAFC',desc:'현재 상태 유지'},
+    {label:'금리 인하 (-1%)',icon:'📉',impact:`+${rateDownStock}`,color:'#10B981',bg:'#ECFDF5',desc:'주식·채권 상승 기대'},
+  ];
+  document.getElementById('rate-scenarios').innerHTML = scenarios.map(s=>`
+    <div style="background:${s.bg};border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);">
+      <div style="font-size:16px;margin-bottom:5px;">${s.icon}</div>
+      <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;font-weight:500;">${s.label}</div>
+      <div style="font-size:16px;font-weight:700;color:${s.color};">${s.impact}%</div>
+      <div style="font-size:9px;color:var(--text-muted);margin-top:3px;">${s.desc}</div>
+    </div>`).join('');
+
+  const rateEl = document.getElementById('rate-comment');
+  if(bondPct < 10 && rw > 0.7) {
+    rateEl.style.cssText='background:#FFF7ED;border:1px solid #FED7AA;color:#92400E;';
+    rateEl.textContent='⚠️ 채권 비중이 낮아 금리 급등 시 방어력이 약해요. 단기채권 ETF(KODEX 단기채권PLUS 등)를 10~20% 추가하면 금리 충격을 완화할 수 있어요.';
+  } else {
+    rateEl.style.cssText='background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;';
+    rateEl.textContent='✅ 채권이 포함되어 금리 변화에 어느 정도 방어가 되는 구성이에요.';
+  }
+
+  // 3. ETF 중복도 분석
+  const etfHoldings = holdings.filter(h => h.type==='ETF' && etfHoldingsDB[h.name]);
+  const overlapEl = document.getElementById('etf-overlap-content');
+  if(etfHoldings.length < 2) {
+    overlapEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">ETF를 2개 이상 보유할 때 중복 분석이 가능해요.</div>';
+  } else {
+    const overlapMap = {};
+    etfHoldings.forEach(h => {
+      const db = etfHoldingsDB[h.name] || {};
+      Object.entries(db).forEach(([stock, pct]) => {
+        if(!overlapMap[stock]) overlapMap[stock] = {total:0, etfs:[]};
+        overlapMap[stock].total += pct * (parseFloat(h.pct)||0) / 100;
+        overlapMap[stock].etfs.push(h.name);
+      });
+    });
+    const overlaps = Object.entries(overlapMap).filter(([,v])=>v.etfs.length>=2).sort((a,b)=>b[1].total-a[1].total).slice(0,5);
+    const maxOverlap = overlaps.length > 0 ? overlaps[0][1].total : 0;
+    if(overlaps.length === 0) {
+      overlapEl.innerHTML='<div style="padding:11px 13px;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;font-size:12px;color:#065F46;">✅ 보유한 ETF 간 중복 종목이 많지 않아요. 분산이 잘 되어 있어요!</div>';
+    } else {
+      overlapEl.innerHTML=`
+        <div style="margin-bottom:10px;font-size:11px;color:var(--text-muted);">겹치는 종목 TOP ${overlaps.length} — 실제로는 이 종목들에 집중 투자되고 있어요</div>
+        ${overlaps.map(([stock,v])=>`
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="font-size:12px;font-weight:600;min-width:100px;">${stock}</div>
+            <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+              <div style="height:8px;background:${v.total>5?'#EF4444':'#F97316'};border-radius:4px;width:${Math.min(v.total/maxOverlap*100,100)}%;"></div>
+            </div>
+            <div style="font-size:11px;font-weight:600;color:${v.total>5?'#EF4444':'#F97316'};min-width:36px;text-align:right;">${v.total.toFixed(1)}%</div>
+            <div style="font-size:10px;color:var(--text-muted);">${v.etfs.length}개 ETF 중복</div>
+          </div>`).join('')}
+        <div style="margin-top:12px;padding:10px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:11px;color:#92400E;line-height:1.5;">
+          💡 중복이 높을수록 실제 분산 효과가 줄어요. S&P500 ETF와 나스닥100 ETF는 상위 종목이 많이 겹쳐요. 하나만 선택하거나, 다른 지역/섹터 ETF로 보완해보세요.
+        </div>`;
+    }
+  }
+
+  // 4. 지역 밸런스
+  let krPct=0, usPct=0, globalPct=0, cryptoPct2=0, bondPct2=0;
+  holdings.forEach(h => {
+    const p = parseFloat(h.pct)||0;
+    const r = regionMap[h.name];
+    if(r===1) krPct+=p;
+    else if(r===2) usPct+=p;
+    else if(r===3) globalPct+=p;
+    else if(r===4) cryptoPct2+=p;
+    else if(r===5) bondPct2+=p;
+    else if(h.type==='예적금'||h.type==='청약') bondPct2+=p;
+    else if(h.type==='채권') bondPct2+=p;
+  });
+  const regionData=[
+    {label:'🇰🇷 한국',pct:krPct,color:'#0EA5E9',ideal:'20~40%'},
+    {label:'🇺🇸 미국',pct:usPct,color:'#3B82F6',ideal:'30~60%'},
+    {label:'🌏 글로벌/기타',pct:globalPct,color:'#10B981',ideal:'10~20%'},
+    {label:'🪙 코인',pct:cryptoPct2,color:'#F97316',ideal:'5% 이하'},
+    {label:'📄 채권·예금',pct:bondPct2,color:'#8B5CF6',ideal:'10~30%'},
+  ].filter(r=>r.pct>0);
+  const maxReg = Math.max(...regionData.map(r=>r.pct),1);
+  document.getElementById('region-balance').innerHTML = regionData.map(r=>`
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="font-size:12px;font-weight:500;min-width:110px;">${r.label}</div>
+      <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+        <div style="height:8px;background:${r.color};border-radius:4px;width:${r.pct/maxReg*100}%;"></div>
+      </div>
+      <div style="font-size:12px;font-weight:700;min-width:36px;text-align:right;">${r.pct.toFixed(0)}%</div>
+      <div style="font-size:10px;color:var(--text-muted);min-width:70px;">권장 ${r.ideal}</div>
+    </div>`).join('');
+
+  const regComEl = document.getElementById('region-comment');
+  if(usPct > 80) { regComEl.style.cssText='background:#FFF7ED;border:1px solid #FED7AA;color:#92400E;'; regComEl.textContent='⚠️ 미국 자산 비중이 매우 높아요. 미국 시장이 크게 하락하면 포트폴리오도 큰 영향을 받아요. 한국·글로벌 자산을 추가해 분산해보세요.'; }
+  else if(krPct > 70) { regComEl.style.cssText='background:#FFF7ED;border:1px solid #FED7AA;color:#92400E;'; regComEl.textContent='⚠️ 국내 자산 비중이 높아요. 글로벌 분산을 위해 S&P500이나 나스닥100 ETF를 추가해보세요.'; }
+  else { regComEl.style.cssText='background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;'; regComEl.textContent='✅ 지역 분산이 양호해요! 국내외 자산을 골고루 보유하고 있어요.'; }
+
+  // 5. 투자 성향 분석
+  let style, styleDesc, styleColor, styleBg, meters;
+  const aggressiveness = rw * 100;
+  if(aggressiveness >= 85 || cryptoPct > 20) {
+    style='🔥 공격투자형'; styleColor='#EF4444'; styleBg='#FFF1F2';
+    styleDesc='높은 수익을 추구하며 큰 변동성을 감수하는 스타일이에요. 단기 급등락이 크고, 장기적으로는 높은 수익 가능성이 있어요.';
+    meters=[{label:'수익 추구',pct:95},{label:'위험 감수',pct:90},{label:'안정성',pct:15},{label:'분산도',pct:40}];
+  } else if(aggressiveness >= 65) {
+    style='📈 성장투자형'; styleColor:'#F97316'; styleBg='#FFF7ED';
+    styleColor='#F97316'; styleBg='#FFF7ED';
+    styleDesc='수익과 안정성 사이에서 성장을 추구하는 스타일이에요. ETF 중심의 분산 투자로 장기 자산 증식에 적합해요.';
+    meters=[{label:'수익 추구',pct:75},{label:'위험 감수',pct:65},{label:'안정성',pct:45},{label:'분산도',pct:65}];
+  } else if(aggressiveness >= 40) {
+    style='⚖️ 균형투자형'; styleColor='#0EA5E9'; styleBg='#EFF6FF';
+    styleDesc='주식과 채권·예금을 균형 있게 보유하는 스타일이에요. 시장 변동에 크게 흔들리지 않고 꾸준히 자산을 늘려가요.';
+    meters=[{label:'수익 추구',pct:55},{label:'위험 감수',pct:45},{label:'안정성',pct:65},{label:'분산도',pct:75}];
+  } else {
+    style='🛡 안정투자형'; styleColor='#10B981'; styleBg='#ECFDF5';
+    styleDesc='자산 보전을 최우선으로 하는 스타일이에요. 수익보다 원금 보호를 중시하며 안전자산 비중이 높아요.';
+    meters=[{label:'수익 추구',pct:25},{label:'위험 감수',pct:20},{label:'안정성',pct:90},{label:'분산도',pct:70}];
+  }
+  document.getElementById('invest-style').innerHTML=`
+    <div style="background:${styleBg};border-radius:12px;padding:16px;border:1px solid ${styleColor}40;">
+      <div style="font-size:16px;font-weight:700;color:${styleColor};margin-bottom:6px;">${style}</div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">${styleDesc}</div>
+      ${meters.map(m=>`
+        <div style="margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
+            <span style="color:var(--text-muted);">${m.label}</span>
+            <span style="font-weight:600;color:${styleColor};">${m.pct}%</span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div style="height:6px;background:${styleColor};border-radius:3px;width:${m.pct}%;transition:width 0.8s ease;"></div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ===== 빠른 기간 선택 =====
+function setPeriodPreset(months) {
+  const input = document.getElementById('target-months');
+  if(input) { input.value = months; calcMonthlyStrategy(); }
+  document.querySelectorAll('.period-preset').forEach(b => {
+    b.style.background = 'white';
+    b.style.color = 'var(--text-muted)';
+    b.style.borderColor = 'var(--border)';
+  });
+  event.target.style.background = 'var(--blue)';
+  event.target.style.color = 'white';
+  event.target.style.borderColor = 'var(--blue)';
+}
+
+// 월급 기반 적립식 전략
+function calcMonthlyStrategy() {
+  const monthly = parseFloat(document.getElementById('monthly-input')?.value)||0;
+  const months = parseFloat(document.getElementById('target-months')?.value)||12;
+  const el = document.getElementById('monthly-strategy');
+  if(!el || monthly <= 0) { if(el) el.innerHTML=''; return; }
+
+  const years = months / 12;
+  const total = monthly * months;
+
+  // 기간에 따라 전략 설명 달라짐
+  const isShort = months <= 6;   // 단기 6개월 이하
+  const isMid = months <= 24;    // 중기 2년 이하
+  const periodLabel = months < 12
+    ? `${months}개월`
+    : months % 12 === 0
+      ? `${months/12}년`
+      : `${Math.floor(months/12)}년 ${months%12}개월`;
+
+  // 기간별 복리 계산
+  const r8 = monthly * ((Math.pow(1 + 0.08/12, months) - 1) / (0.08/12));
+  const r5 = monthly * ((Math.pow(1 + 0.05/12, months) - 1) / (0.05/12));
+  const r12 = monthly * ((Math.pow(1 + 0.12/12, months) - 1) / (0.12/12));
+
+  // 단기면 예적금+CMA 강조, 장기면 ETF 강조
+  const strategies = isShort ? [
+    {
+      label:'🏦 CMA + 단기채권 (추천)',
+      alloc:`CMA ${Math.round(monthly*0.5)}만원 + KODEX 단기채권PLUS ${Math.round(monthly*0.5)}만원`,
+      why:'6개월 이하는 원금 보전이 최우선! CMA와 단기채권 ETF가 가장 안전해요.',
+      color:'#10B981',bg:'#ECFDF5',bc:'#A7F3D0',
+      est:Math.round(r5)
+    },
+    {
+      label:'📄 정기적금',
+      alloc:`은행 정기적금 ${monthly}만원 전액`,
+      why:'단기 목돈 모으기엔 원금 보장되는 적금이 안전해요. 금리 3~4% 상품 찾아보세요.',
+      color:'#0EA5E9',bg:'#EFF6FF',bc:'#BAE6FD',
+      est:Math.round(total * 1.035)
+    },
+    {
+      label:'⚡ ETF 단기 투자 (변동성 주의)',
+      alloc:`ISA 계좌에 단기채권 ETF ${Math.round(monthly*0.7)}만원 + S&P500 ${Math.round(monthly*0.3)}만원`,
+      why:'단기는 주식 ETF 비중을 줄이고 안전자산 위주로 구성하는 게 좋아요.',
+      color:'#F97316',bg:'#FFF7ED',bc:'#FED7AA',
+      est:Math.round(r5 * 1.02)
+    },
+  ] : isMid ? [
+    {
+      label:'📊 ISA ETF 적립식 (추천)',
+      alloc:`ISA에 S&P500 ETF ${Math.round(monthly*0.5)}만원 + 코스피200 ${Math.round(monthly*0.3)}만원 + 단기채권 ${Math.round(monthly*0.2)}만원`,
+      why:'2년 이하 중기는 ISA 계좌로 비과세 혜택 받으면서 ETF 적립이 최적이에요.',
+      color:'#0EA5E9',bg:'#EFF6FF',bc:'#BAE6FD',
+      est:Math.round(r8)
+    },
+    {
+      label:'🛡 안정형 (예적금+ETF)',
+      alloc:`정기적금 ${Math.round(monthly*0.5)}만원 + ISA ETF ${Math.round(monthly*0.5)}만원`,
+      why:'목돈이 필요한 중기 계획이라면 절반은 안전하게, 절반은 ETF로 굴려요.',
+      color:'#10B981',bg:'#ECFDF5',bc:'#A7F3D0',
+      est:Math.round(r5 * 1.03)
+    },
+    {
+      label:'🔥 성장형 (나스닥 중심)',
+      alloc:`나스닥100 ETF ${Math.round(monthly*0.6)}만원 + S&P500 ${Math.round(monthly*0.4)}만원`,
+      why:'변동성을 감수하고 더 높은 수익을 원한다면 미국 성장주 ETF 중심으로.',
+      color:'#F97316',bg:'#FFF7ED',bc:'#FED7AA',
+      est:Math.round(r12)
+    },
+  ] : [
+    {
+      label:'📊 ETF 장기 적립식 (추천)',
+      alloc:`ISA에 S&P500 ETF ${Math.round(monthly*0.5)}만원 + 코스피200 ${Math.round(monthly*0.3)}만원 + 단기채권 ${Math.round(monthly*0.2)}만원`,
+      why:'장기 투자에서 복리 효과가 가장 크게 나타나요. 저수수료 ETF 자동 적립이 정석이에요.',
+      color:'#0EA5E9',bg:'#EFF6FF',bc:'#BAE6FD',
+      est:Math.round(r8)
+    },
+    {
+      label:'🛡 균형형 (IRP+ISA 조합)',
+      alloc:`IRP ${Math.round(monthly*0.4)}만원 (세액공제) + ISA ETF ${Math.round(monthly*0.4)}만원 + CMA ${Math.round(monthly*0.2)}만원`,
+      why:'IRP 세액공제로 연말정산 환급받으면서 장기 자산도 쌓을 수 있어요.',
+      color:'#10B981',bg:'#ECFDF5',bc:'#A7F3D0',
+      est:Math.round(r5 * 1.1)
+    },
+    {
+      label:'🔥 공격형 (나스닥+테마)',
+      alloc:`나스닥100 ETF ${Math.round(monthly*0.6)}만원 + 테마ETF ${Math.round(monthly*0.3)}만원 + 코인 ${Math.round(monthly*0.1)}만원`,
+      why:'장기 고수익을 노리지만 변동성이 매우 커요. 버틸 수 있는 여유 자금만 투자하세요.',
+      color:'#EF4444',bg:'#FFF1F2',bc:'#FECDD3',
+      est:Math.round(r12)
+    },
+  ];
+
+  el.innerHTML=`
+    <div style="background:#F8FAFC;border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;font-weight:500;">월 ${monthly}만원 × ${periodLabel} 적립 시 예상 결과</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:white;border-radius:8px;padding:10px;border:1px solid var(--border);">
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px;">단순 적립 원금</div>
+          <div style="font-size:16px;font-weight:700;color:var(--text);">${total.toLocaleString()}만원</div>
+        </div>
+        <div style="background:#ECFDF5;border-radius:8px;padding:10px;border:1px solid #A7F3D0;">
+          <div style="font-size:10px;color:#047857;margin-bottom:3px;">ETF 복리 투자 시 (연 8%)</div>
+          <div style="font-size:16px;font-weight:700;color:var(--green);">${Math.round(r8).toLocaleString()}만원</div>
+        </div>
+      </div>
+      ${isShort ? '<div style="margin-top:8px;font-size:11px;color:#92400E;background:#FFF7ED;padding:8px 10px;border-radius:8px;">💡 단기(6개월 이하)는 주식 변동성이 크므로 안전자산 중심 전략을 추천해요.</div>' : ''}
+    </div>
+    ${strategies.map(s=>`
+      <div style="background:${s.bg};border:1px solid ${s.bc};border-radius:12px;padding:13px 14px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
+          <div style="font-size:12px;font-weight:700;color:${s.color};">${s.label}</div>
+          <div style="text-align:right;flex-shrink:0;margin-left:8px;">
+            <div style="font-size:10px;color:var(--text-muted);">예상 결과</div>
+            <div style="font-size:13px;font-weight:700;color:${s.color};">${s.est.toLocaleString()}만원</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:5px;line-height:1.5;">${s.alloc}</div>
+        <div style="font-size:11px;color:${s.color};opacity:0.85;line-height:1.4;">💡 ${s.why}</div>
+      </div>`).join('')}`;
+}
+
+
 // ===== 공유 기능 =====
-const SITE_URL = window.location.href;
+// 실제 배포 주소 고정 (로컬 파일로 열어도 올바른 URL 공유)
+const SITE_URL = 'https://menat.vercel.app';
 const SITE_TITLE = '메나트 — 복잡한 금융, 쉽고 똑똑하게';
 
+// 클립보드 복사 (구형 브라우저 호환 포함)
+function copyToClipboard(text) {
+  // 최신 방식
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+  // 폴백 — textarea 방식 (파일로 열었을 때, 구형 브라우저)
+  return new Promise((resolve, reject) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+    try {
+      const ok = document.execCommand('copy');
+      document.body.removeChild(el);
+      ok ? resolve() : reject();
+    } catch(e) {
+      document.body.removeChild(el);
+      reject(e);
+    }
+  });
+}
+
 function shareKakao(from) {
+  const score = document.getElementById('score-text')?.textContent || '';
+  const loss = document.getElementById('share-main')?.textContent || '';
   const msgs = {
-    calc: '나는 매년 세금으로 손해보고 있었다 😱 너도 얼마나 손해보는지 확인해봐!',
-    portfolio: '내 포트폴리오 점수 확인했어! 너도 한번 해봐 📊',
+    calc: loss || '나는 매년 세금으로 손해보고 있었다 😱 너도 얼마나 손해보는지 확인해봐!',
+    portfolio: score ? `내 포트폴리오 점수 ${score}점 받았어 📊 너도 한번 해봐!` : '내 포트폴리오 분석해봤어! 너도 한번 해봐 📊',
     main: '투자 계좌 비교, ETF 분석, 포트폴리오 점검 — 메나트에서 다 해봐! 완전 무료야 👀',
   };
   const msg = msgs[from] || msgs.main;
-  // 카카오 SDK 없는 환경 대비 — 실제 배포 시 SDK 연동
-  const kakaoText = encodeURIComponent(`${msg}\n\n${SITE_URL}`);
-  // 모바일: 카카오톡 앱 딥링크, 데스크탑: 복사 안내
-  if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-    window.open(`kakaolink://send?text=${kakaoText}`, '_blank');
-    setTimeout(() => {
-      navigator.clipboard.writeText(`${msg}\n\n${SITE_URL}`).then(() => {
-        showToast('📋 링크가 복사됐어요! 카카오톡에 붙여넣기 해주세요 😄');
-      });
-    }, 1000);
-  } else {
-    navigator.clipboard.writeText(`${msg}\n\n${SITE_URL}`).then(() => {
-      showToast('📋 카카오톡 공유 문구가 복사됐어요! 카카오톡 채팅창에 붙여넣기 해주세요 😄');
-    }).catch(() => {
-      prompt('아래 텍스트를 복사해서 카카오톡에 공유해주세요!', `${msg}\n\n${SITE_URL}`);
+  const fullText = `${msg}\n\n👉 ${SITE_URL}`;
+
+  copyToClipboard(fullText)
+    .then(() => {
+      showToast('📋 공유 문구가 복사됐어요!\n카카오톡 채팅창에 붙여넣기(길게 누르기)해서 공유해주세요 😄');
+    })
+    .catch(() => {
+      showShareModal(fullText);
     });
-  }
 }
 
 function shareInstagram() {
-  // 인스타그램은 직접 URL 공유 API가 없어 링크 복사 후 스토리 업로드 안내
-  navigator.clipboard.writeText(SITE_URL).then(() => {
-    showToast('📋 링크가 복사됐어요! 인스타그램 스토리 → 링크 스티커에 붙여넣기 해주세요 📸');
-  }).catch(() => {
-    prompt('아래 링크를 인스타그램 스토리에 공유해주세요!', SITE_URL);
-  });
+  const fullText = `복잡한 금융, 쉽고 똑똑하게 📊\nISA·IRP·ETF 비교부터 포트폴리오 점검까지!\n\n👉 ${SITE_URL}`;
+  copyToClipboard(SITE_URL)
+    .then(() => {
+      showToast('📋 링크가 복사됐어요!\n인스타그램 스토리 → 링크 스티커에 붙여넣기 해주세요 📸');
+    })
+    .catch(() => {
+      showShareModal(fullText);
+    });
 }
 
 function shareLink() {
-  navigator.clipboard.writeText(SITE_URL).then(() => {
-    showToast('🔗 링크가 클립보드에 복사됐어요!');
-  }).catch(() => {
-    prompt('아래 링크를 복사해주세요!', SITE_URL);
-  });
+  copyToClipboard(SITE_URL)
+    .then(() => {
+      showToast('🔗 링크가 복사됐어요! — ' + SITE_URL);
+    })
+    .catch(() => {
+      showShareModal(SITE_URL);
+    });
+}
+
+// 복사 실패 시 모달로 직접 선택할 수 있게
+function showShareModal(text) {
+  let modal = document.getElementById('share-modal');
+  if(!modal) {
+    modal = document.createElement('div');
+    modal.id = 'share-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:white;border-radius:16px;padding:24px;max-width:360px;width:100%;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">아래 텍스트를 복사해서 공유해주세요</div>
+        <textarea id="share-modal-text" style="width:100%;height:100px;border:1.5px solid #E2E8F0;border-radius:10px;padding:10px;font-size:12px;font-family:Noto Sans KR,sans-serif;resize:none;margin-bottom:12px;"></textarea>
+        <div style="display:flex;gap:8px;">
+          <button onclick="document.getElementById('share-modal-text').select();document.execCommand('copy');showToast('복사됐어요!');document.getElementById('share-modal').remove();"
+            style="flex:1;height:40px;background:#0EA5E9;color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;">복사하기</button>
+          <button onclick="document.getElementById('share-modal').remove();"
+            style="height:40px;padding:0 16px;background:#F1F5F9;color:#64748B;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-family:Noto Sans KR,sans-serif;">닫기</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+  }
+  document.getElementById('share-modal-text').value = text;
 }
 
 // 토스트 메시지
@@ -1235,13 +2088,13 @@ function showToast(msg) {
   if (!t) {
     t = document.createElement('div');
     t.id = 'toast-msg';
-    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0F172A;color:white;padding:12px 20px;border-radius:12px;font-size:13px;font-family:Noto Sans KR,sans-serif;z-index:9999;max-width:320px;text-align:center;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:opacity 0.3s;';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0F172A;color:white;padding:12px 20px;border-radius:12px;font-size:13px;font-family:Noto Sans KR,sans-serif;z-index:9999;max-width:320px;width:90%;text-align:center;line-height:1.6;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:opacity 0.3s;white-space:pre-line;';
     document.body.appendChild(t);
   }
   t.textContent = msg;
   t.style.opacity = '1';
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 3500);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 4000);
 }
 </script>
 </body>
